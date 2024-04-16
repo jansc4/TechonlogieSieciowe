@@ -3,11 +3,11 @@ package edu.ib.technologiebyadamski.controller;
 import edu.ib.technologiebyadamski.controller.dto.CreateBookDto;
 import edu.ib.technologiebyadamski.controller.dto.CreateBookResponseDto;
 import edu.ib.technologiebyadamski.controller.dto.GetBookDto;
-import edu.ib.technologiebyadamski.infrastructure.entity.BookEntity;
+
 import edu.ib.technologiebyadamski.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
