@@ -27,6 +27,9 @@ public class UserService {
         var userEntity = userRepository.findById(id).orElseThrow(() ->new RuntimeException("User not found"));
         return new GetUserDto(userEntity.getUserId(), userEntity.getUserName(), userEntity.getRole(), userEntity.getEmail(), userEntity.getName());
     }
+    public UserEntity getOneUserEntity(long id){
+        return userRepository.findById(id).orElseThrow(() ->new RuntimeException("User not found"));
+    }
     public CreateUserResponseDto create(CreateUserDto user){
         var userEntity = new UserEntity();
         userEntity.setUserName(user.getUserName());

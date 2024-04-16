@@ -29,6 +29,9 @@ public class BookService {
         var bookEntity = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
         return new GetBookDto(bookEntity.getId(), bookEntity.getIsbn(), bookEntity.getTitle(), bookEntity.getAuthor(), bookEntity.getPublisher(), bookEntity.getPublicationYear(), bookEntity.getAvailableCopies() > 0);
     }
+    public BookEntity getOneBookEntity(long id){
+        return bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
+    }
 
     public CreateBookResponseDto create(CreateBookDto book){
         var bookEntity = new BookEntity();

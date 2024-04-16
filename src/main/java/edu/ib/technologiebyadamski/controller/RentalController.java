@@ -1,30 +1,45 @@
 package edu.ib.technologiebyadamski.controller;
 
 
+import edu.ib.technologiebyadamski.controller.dto.CreateRentalDto;
+import edu.ib.technologiebyadamski.controller.dto.GetRentalDto;
 import edu.ib.technologiebyadamski.service.RentalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/rentals")
 public class RentalController {
     private final RentalService rentalService;
+
     @Autowired
     public RentalController(RentalService rentalService) {
         this.rentalService = rentalService;
     }
 
-    public RentalController(RentalRepository rentalRepository){
-        this.rentalRepository = rentalRepository;
+    @GetMapping
+    public List<GetRentalDto> getAllRentals() {
+        return rentalService.getAll();
     }
-    @PostMapping("/add")
-    @ResponseStatus(code= HttpStatus.CREATED)
-    public @ResponseBody Rental addRental(@RequestBody Rental rental){
-        return rentalRepository.save(rental);
+
+    @GetMapping("/{id}")
+    public GetRentalDto getOne(@PathVariable long id) {
+        return rentalService.getOne(id);
     }
-    @GetMapping("/getAll")
-    public @ResponseBody Iterable<Rental> getAllRental(){
-        return rentalRepository.findAll();
+
+    @PostMapping
+    public ResponseEntity<GetRentalDto> create(@RequestBody CreateRentalDto rental) {
+        var newRental = rentalService.create(rental);
+        return new ResponseEntity<>(newRental, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable long id) {
+        rentalService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
