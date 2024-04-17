@@ -1,6 +1,8 @@
 package edu.ib.technologiebyadamski.controller;
 
+import com.mysql.cj.log.Log;
 import edu.ib.technologiebyadamski.controller.dto.LoginDto;
+import edu.ib.technologiebyadamski.controller.dto.LoginResponseDto;
 import edu.ib.technologiebyadamski.controller.dto.RegisterDto;
 import edu.ib.technologiebyadamski.controller.dto.RegisterResponseDto;
 import edu.ib.technologiebyadamski.service.AuthService;
@@ -26,8 +28,9 @@ public class AuthController {
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
     @PostMapping("/login")
-    public void register(@RequestBody LoginDto requestBody){
-        authService.login(requestBody);
+    public ResponseEntity<LoginResponseDto> register(@RequestBody LoginDto requestBody){
+        LoginResponseDto dto = authService.login(requestBody);
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
 
 }

@@ -1,5 +1,6 @@
 package edu.ib.technologiebyadamski.service;
 
+import edu.ib.technologiebyadamski.commonTypes.Role;
 import edu.ib.technologiebyadamski.infrastructure.entity.AuthEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -35,6 +36,10 @@ public class JwtService {
     }
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
+    }
+    public Role extractRole(String token){
+        String roleString = extractClaim(token, (claims) -> claims.get("role", String.class));
+        return Role.valueOf(roleString);
     }
     private boolean isTokenExpired(String token){
         return extractExpiration(token).before(new Date());
