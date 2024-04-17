@@ -1,33 +1,18 @@
 package edu.ib.technologiebyadamski.controller.dto;
 
-import edu.ib.technologiebyadamski.infrastructure.entity.Role;
+import edu.ib.technologiebyadamski.commonTypes.Role;
 
-public class CreateUserDto {
-    private String userName;
+public class RegisterDto {
     private String password;
+    private String userName;
     private Role role;
-
     private String email;
 
-    private String name;
-
-    public CreateUserDto(String userName, String password, Role role, String email, String name) {
-        this.userName = userName;
+    public RegisterDto(String password, String userName, Role role, String email) {
         this.password = password;
+        this.userName = userName;
         this.role = role;
         this.email = email;
-        this.name = name;
-    }
-
-    public CreateUserDto() {
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public String getPassword() {
@@ -36,6 +21,14 @@ public class CreateUserDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Role getRole() {
@@ -52,13 +45,5 @@ public class CreateUserDto {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

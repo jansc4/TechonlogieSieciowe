@@ -1,5 +1,4 @@
 package edu.ib.technologiebyadamski.infrastructure.entity;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -9,16 +8,22 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long userId;
-    @Column(name = "user_name")
-    private String userName;
-    @Column(name = "password")
-    private String password;
-    @Column(name = "role")
-    private Role role;
     @Column(name = "email")
+    @Basic
     private String email;
     @Column(name = "name")
+    @Basic
     private String name;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private AuthEntity auth;
+
+    public AuthEntity getAuth() {
+        return auth;
+    }
+
+    public void setAuth(AuthEntity auth) {
+        this.auth = auth;
+    }
 
     public long getUserId() {
         return userId;
@@ -28,29 +33,6 @@ public class UserEntity {
         this.userId = userId;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
     public String getEmail() {
         return email;

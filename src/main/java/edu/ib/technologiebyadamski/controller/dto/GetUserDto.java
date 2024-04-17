@@ -1,6 +1,6 @@
 package edu.ib.technologiebyadamski.controller.dto;
 
-import edu.ib.technologiebyadamski.infrastructure.entity.Role;
+import edu.ib.technologiebyadamski.commonTypes.Role;
 
 
 public class GetUserDto {
