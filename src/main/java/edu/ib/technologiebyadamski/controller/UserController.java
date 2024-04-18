@@ -21,16 +21,18 @@ public class UserController {
     }
 
     @GetMapping
-
+    @PreAuthorize("hasRole('ADMIN')")
     public List<GetUserDto> getAllUsers() {
         return userService.getAll();
     }
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public GetUserDto getOne(@PathVariable long id){
         return userService.getOne(id);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable long id){
         userService.delete(id);
         return ResponseEntity.noContent().build();
