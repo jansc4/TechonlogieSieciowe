@@ -9,6 +9,7 @@ import edu.ib.technologiebyadamski.infrastructure.entity.UserEntity;
 import edu.ib.technologiebyadamski.infrastructure.repository.AuthRepository;
 import edu.ib.technologiebyadamski.infrastructure.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,11 +17,13 @@ public class AuthService {
     private final AuthRepository authRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
     @Autowired
-    public AuthService(AuthRepository authRepository, UserRepository userRepository, JwtService jwtService) {
+    public AuthService(AuthRepository authRepository, UserRepository userRepository, JwtService jwtService, PasswordEncoder passwordEncoder) {
         this.authRepository = authRepository;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public RegisterResponseDto register(RegisterDto dto){
@@ -29,7 +32,7 @@ public class AuthService {
         userRepository.save(userEntity);
 
         AuthEntity authEntity = new AuthEntity();
-        authEntity.setPassword(dto.getPassword());
+        authEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
         authEntity.setUserName(dto.getUserName());
         authEntity.setRole(dto.getRole());
         authEntity.setUser(userEntity);
@@ -41,7 +44,7 @@ public class AuthService {
     public LoginResponseDto login(LoginDto dto ){
         AuthEntity authEntity = authRepository.findByUserName(dto.getUserName()).orElseThrow(RuntimeException::new);
 
-        if (!authEntity.getPassword().equals(dto.getPassword())){
+        if (!passwordEncoder.matches(dto.getPassword(), authEntity.getPassword())){
             throw new RuntimeException();
         }
         String token = jwtService.generateToken(authEntity);
