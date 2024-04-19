@@ -3,12 +3,17 @@ package edu.ib.technologiebyadamski.service;
 import edu.ib.technologiebyadamski.controller.dto.CreateBookDto;
 import edu.ib.technologiebyadamski.controller.dto.CreateBookResponseDto;
 import edu.ib.technologiebyadamski.controller.dto.GetBookDto;
+import edu.ib.technologiebyadamski.infrastructure.entity.AuthEntity;
 import edu.ib.technologiebyadamski.infrastructure.entity.BookEntity;
 import edu.ib.technologiebyadamski.infrastructure.repository.BookRepository;
+import edu.ib.technologiebyadamski.service.error.BookNotFoundException;
+import edu.ib.technologiebyadamski.service.error.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,14 +31,20 @@ public class BookService {
     }
 
     public GetBookDto getOne(long id){
-        var bookEntity = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
+        var bookEntity = bookRepository.findById(id).orElseThrow(BookNotFoundException::create);
         return new GetBookDto(bookEntity.getId(), bookEntity.getIsbn(), bookEntity.getTitle(), bookEntity.getAuthor(), bookEntity.getPublisher(), bookEntity.getPublicationYear(), bookEntity.getAvailableCopies() > 0);
     }
     public BookEntity getOneBookEntity(long id){
-        return bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
+        return bookRepository.findById(id).orElseThrow(() -> BookNotFoundException.create(id));
     }
-
+    @Transactional
     public CreateBookResponseDto create(CreateBookDto book){
+        Optional<BookEntity> exsistingBook = bookRepository.findByTitle(book.getTitle());
+
+        if (exsistingBook.isPresent()){
+            throw UserAlreadyExistsException.create(book.getTitle());
+        }
+
         var bookEntity = new BookEntity();
         bookEntity.setAuthor(book.getAuthor());
         bookEntity.setTitle(book.getTitle());
@@ -47,7 +58,7 @@ public class BookService {
 
     public void delete(long id){
         if(!bookRepository.existsById(id)){
-            throw new RuntimeException();
+            throw BookNotFoundException.create(id);
         }
         bookRepository.deleteById(id);
     }

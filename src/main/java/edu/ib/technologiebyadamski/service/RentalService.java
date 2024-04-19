@@ -4,8 +4,10 @@ import edu.ib.technologiebyadamski.controller.dto.CreateRentalDto;
 import edu.ib.technologiebyadamski.controller.dto.GetRentalDto;
 import edu.ib.technologiebyadamski.infrastructure.entity.RentalEntity;
 import edu.ib.technologiebyadamski.infrastructure.repository.RentalRepository;
+import edu.ib.technologiebyadamski.service.error.RentalNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,9 +30,10 @@ public class RentalService {
         return rentals.stream().map((rental) -> new GetRentalDto(rental.getLoanId(), bookService.getOne(rental.getBook().getId()), userService.getOne(rental.getUser().getUserId()), rental.getRentalDate(), rental.getEndRentalDate(), rental.getReturnDate())).collect(Collectors.toList());
     }
     public GetRentalDto getOne(long id){
-        var rental = rentalRepository.findById(id).orElseThrow(() -> new RuntimeException("Rental not found"));
+        var rental = rentalRepository.findById(id).orElseThrow(() -> RentalNotFoundException.create(id));
         return new GetRentalDto(rental.getLoanId(), bookService.getOne(rental.getBook().getId()), userService.getOne(rental.getUser().getUserId()), rental.getRentalDate(), rental.getEndRentalDate(), rental.getReturnDate());
     }
+    @Transactional
     public GetRentalDto create(CreateRentalDto rental){
         var rentalEntity = new RentalEntity();
         rentalEntity.setBook(bookService.getOneBookEntity(rental.getBook()));
@@ -43,7 +46,7 @@ public class RentalService {
     }
     public void delete(long id){
         if(!rentalRepository.existsById(id)){
-            throw new RuntimeException();
+            throw RentalNotFoundException.create(id);
         }
         rentalRepository.deleteById(id);
     }

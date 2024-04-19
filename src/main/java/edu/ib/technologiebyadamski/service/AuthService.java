@@ -8,10 +8,13 @@ import edu.ib.technologiebyadamski.infrastructure.entity.AuthEntity;
 import edu.ib.technologiebyadamski.infrastructure.entity.UserEntity;
 import edu.ib.technologiebyadamski.infrastructure.repository.AuthRepository;
 import edu.ib.technologiebyadamski.infrastructure.repository.UserRepository;
+import edu.ib.technologiebyadamski.service.error.InvalidPasswordException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import edu.ib.technologiebyadamski.service.error.UserAlreadyExistsException;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 @Service
@@ -27,7 +30,7 @@ public class AuthService {
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
-
+    @Transactional
     public RegisterResponseDto register(RegisterDto dto){
         Optional<AuthEntity> exsistingAuth = authRepository.findByUserName(dto.getUserName());
 
@@ -53,7 +56,7 @@ public class AuthService {
         AuthEntity authEntity = authRepository.findByUserName(dto.getUserName()).orElseThrow(RuntimeException::new);
 
         if (!passwordEncoder.matches(dto.getPassword(), authEntity.getPassword())){
-            throw new RuntimeException();
+            throw InvalidPasswordException.create();
         }
         String token = jwtService.generateToken(authEntity);
         return new LoginResponseDto(token);
