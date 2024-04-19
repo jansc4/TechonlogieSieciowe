@@ -31,7 +31,7 @@ public class BookService {
     }
 
     public GetBookDto getOne(long id){
-        var bookEntity = bookRepository.findById(id).orElseThrow(BookNotFoundException::create);
+        var bookEntity = bookRepository.findById(id).orElseThrow(() -> BookNotFoundException.create(id));
         return new GetBookDto(bookEntity.getId(), bookEntity.getIsbn(), bookEntity.getTitle(), bookEntity.getAuthor(), bookEntity.getPublisher(), bookEntity.getPublicationYear(), bookEntity.getAvailableCopies() > 0);
     }
     public BookEntity getOneBookEntity(long id){
