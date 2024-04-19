@@ -11,6 +11,8 @@ import edu.ib.technologiebyadamski.infrastructure.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import edu.ib.technologiebyadamski.service.error.UserAlreadyExistsException;
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -27,6 +29,12 @@ public class AuthService {
     }
 
     public RegisterResponseDto register(RegisterDto dto){
+        Optional<AuthEntity> exsistingAuth = authRepository.findByUserName(dto.getUserName());
+
+        if (exsistingAuth.isPresent()){
+            throw UserAlreadyExistsException.create(dto.getUserName());
+        }
+
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(dto.getEmail());
         userRepository.save(userEntity);
