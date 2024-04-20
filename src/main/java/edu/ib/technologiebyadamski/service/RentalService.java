@@ -1,6 +1,7 @@
 package edu.ib.technologiebyadamski.service;
 
 import edu.ib.technologiebyadamski.controller.dto.CreateRentalDto;
+import edu.ib.technologiebyadamski.controller.dto.CreateRentalResponseDto;
 import edu.ib.technologiebyadamski.controller.dto.GetRentalDto;
 import edu.ib.technologiebyadamski.infrastructure.entity.RentalEntity;
 import edu.ib.technologiebyadamski.infrastructure.repository.RentalRepository;
@@ -34,15 +35,15 @@ public class RentalService {
         return new GetRentalDto(rental.getLoanId(), bookService.getOne(rental.getBook().getId()), userService.getOne(rental.getUser().getUserId()), rental.getRentalDate(), rental.getEndRentalDate(), rental.getReturnDate());
     }
     @Transactional
-    public GetRentalDto create(CreateRentalDto rental){
+    public CreateRentalResponseDto create(CreateRentalDto rental){
         var rentalEntity = new RentalEntity();
         rentalEntity.setBook(bookService.getOneBookEntity(rental.getBook()));
         rentalEntity.setUser(userService.getOneUserEntity(rental.getUser()));
         rentalEntity.setRentalDate(rental.getRentalDate());
         rentalEntity.setEndRentalDate(rental.getEndRentalDate());
-        rentalEntity.setReturnDate(rental.getReturnDate());
+        rentalEntity.setReturnDate(null);
         var newRental = rentalRepository.save(rentalEntity);
-        return new GetRentalDto(newRental.getLoanId(), bookService.getOne(newRental.getBook().getId()), userService.getOne(newRental.getUser().getUserId()), newRental.getRentalDate(), newRental.getEndRentalDate(), newRental.getReturnDate());
+        return new CreateRentalResponseDto(newRental.getLoanId(), bookService.getOne(newRental.getBook().getId()), userService.getOne(newRental.getUser().getUserId()), newRental.getRentalDate(), newRental.getEndRentalDate());
     }
     public void delete(long id){
         if(!rentalRepository.existsById(id)){

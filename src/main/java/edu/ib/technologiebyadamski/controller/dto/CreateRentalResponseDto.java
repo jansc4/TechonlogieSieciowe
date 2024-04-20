@@ -2,41 +2,49 @@ package edu.ib.technologiebyadamski.controller.dto;
 
 import java.util.Date;
 
-public class CreateRentalDto {
-    private long book; //przekazujemy tylko id
+public class CreateRentalResponseDto {
+    private long loanId;
 
-    private long user;
+    private GetBookDto book;
+
+    private GetUserDto user;
 
     private Date rentalDate;
 
     private Date endRentalDate;
 
-
-
-    public CreateRentalDto(long book, long user, Date rentalDate, Date endRentalDate) {
+    public CreateRentalResponseDto(long loanId, GetBookDto book, GetUserDto user, Date rentalDate, Date endRentalDate) {
+        this.loanId = loanId;
         this.book = book;
         this.user = user;
         this.rentalDate = rentalDate;
         this.endRentalDate = endRentalDate;
-
     }
 
-    public CreateRentalDto() {
+    public CreateRentalResponseDto() {
     }
 
-    public long getBook() {
+    public long getLoanId() {
+        return loanId;
+    }
+
+    public void setLoanId(long loanId) {
+        this.loanId = loanId;
+    }
+
+    public GetBookDto getBook() {
         return book;
     }
 
-    public void setBook(long book) {
+    public void setBook(GetBookDto book) {
         this.book = book;
     }
 
-    public long getUser() {
+    public GetUserDto getUser() {
         return user;
     }
 
-    public void setUser(long user) {
+    public void setUser(GetUserDto user) {
         this.user = user;
     }
 
@@ -55,5 +63,4 @@ public class CreateRentalDto {
     public void setEndRentalDate(Date endRentalDate) {
         this.endRentalDate = endRentalDate;
     }
-
 }

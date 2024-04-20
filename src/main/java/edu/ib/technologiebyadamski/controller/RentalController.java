@@ -2,6 +2,7 @@ package edu.ib.technologiebyadamski.controller;
 
 
 import edu.ib.technologiebyadamski.controller.dto.CreateRentalDto;
+import edu.ib.technologiebyadamski.controller.dto.CreateRentalResponseDto;
 import edu.ib.technologiebyadamski.controller.dto.GetRentalDto;
 import edu.ib.technologiebyadamski.service.RentalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class RentalController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<GetRentalDto> create(@RequestBody CreateRentalDto rental) {
+    public ResponseEntity<CreateRentalResponseDto> create(@RequestBody CreateRentalDto rental) {
         var newRental = rentalService.create(rental);
         return new ResponseEntity<>(newRental, HttpStatus.CREATED);
     }
@@ -47,4 +48,5 @@ public class RentalController {
         rentalService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
 }

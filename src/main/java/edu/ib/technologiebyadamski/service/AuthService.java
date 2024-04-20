@@ -8,6 +8,7 @@ import edu.ib.technologiebyadamski.infrastructure.entity.AuthEntity;
 import edu.ib.technologiebyadamski.infrastructure.entity.UserEntity;
 import edu.ib.technologiebyadamski.infrastructure.repository.AuthRepository;
 import edu.ib.technologiebyadamski.infrastructure.repository.UserRepository;
+import edu.ib.technologiebyadamski.service.error.InvalidLoginException;
 import edu.ib.technologiebyadamski.service.error.InvalidPasswordException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,7 +54,7 @@ public class AuthService {
         return new RegisterResponseDto(authEntity.getUserName(), authEntity.getRole());
     }
     public LoginResponseDto login(LoginDto dto ){
-        AuthEntity authEntity = authRepository.findByUserName(dto.getUserName()).orElseThrow(RuntimeException::new);
+        AuthEntity authEntity = authRepository.findByUserName(dto.getUserName()).orElseThrow(InvalidLoginException::create);
 
         if (!passwordEncoder.matches(dto.getPassword(), authEntity.getPassword())){
             throw InvalidPasswordException.create();
