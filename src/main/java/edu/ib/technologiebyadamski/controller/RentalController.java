@@ -1,6 +1,7 @@
 package edu.ib.technologiebyadamski.controller;
 
 
+import edu.ib.technologiebyadamski.controller.dto.BookReturnDto;
 import edu.ib.technologiebyadamski.controller.dto.CreateRentalDto;
 import edu.ib.technologiebyadamski.controller.dto.CreateRentalResponseDto;
 import edu.ib.technologiebyadamski.controller.dto.GetRentalDto;
@@ -47,6 +48,12 @@ public class RentalController {
     public ResponseEntity<Void> delete(@PathVariable long id) {
         rentalService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/return")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<GetRentalDto> returnBook(@RequestBody BookReturnDto rental) {
+        var newRental = rentalService.bookReturn(rental);
+        return new ResponseEntity<>(newRental, HttpStatus.OK);
     }
 
 }

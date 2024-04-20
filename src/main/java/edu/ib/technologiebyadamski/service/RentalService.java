@@ -1,5 +1,6 @@
 package edu.ib.technologiebyadamski.service;
 
+import edu.ib.technologiebyadamski.controller.dto.BookReturnDto;
 import edu.ib.technologiebyadamski.controller.dto.CreateRentalDto;
 import edu.ib.technologiebyadamski.controller.dto.CreateRentalResponseDto;
 import edu.ib.technologiebyadamski.controller.dto.GetRentalDto;
@@ -50,5 +51,11 @@ public class RentalService {
             throw RentalNotFoundException.create(id);
         }
         rentalRepository.deleteById(id);
+    }
+    public GetRentalDto bookReturn(BookReturnDto dto){
+        var rental = rentalRepository.findById(dto.getLoanId()).orElseThrow(() -> RentalNotFoundException.create(dto.getLoanId()));
+        rental.setReturnDate(dto.getReturnDate());
+        rentalRepository.save(rental);
+        return new GetRentalDto(rental.getLoanId(), bookService.getOne(rental.getBook().getId()), userService.getOne(rental.getUser().getUserId()), rental.getRentalDate(), rental.getEndRentalDate(), rental.getReturnDate());
     }
 }
