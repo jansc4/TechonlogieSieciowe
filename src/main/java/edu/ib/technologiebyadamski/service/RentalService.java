@@ -7,10 +7,13 @@ import edu.ib.technologiebyadamski.controller.dto.GetRentalDto;
 import edu.ib.technologiebyadamski.infrastructure.entity.RentalEntity;
 import edu.ib.technologiebyadamski.infrastructure.repository.RentalRepository;
 import edu.ib.technologiebyadamski.service.error.RentalNotFoundException;
+import edu.ib.technologiebyadamski.service.error.WrongDateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,13 @@ public class RentalService {
     }
     @Transactional
     public CreateRentalResponseDto create(CreateRentalDto rental){
+        if  (rental.getRentalDate().before(Date.valueOf(LocalDate.now()))){
+            throw WrongDateException.create(rental.getRentalDate());
+        }
+        if (rental.getRentalDate().after(rental.getEndRentalDate())){
+            throw WrongDateException.create(rental.getEndRentalDate());
+        }
+
         var rentalEntity = new RentalEntity();
         rentalEntity.setBook(bookService.getOneBookEntity(rental.getBook()));
         rentalEntity.setUser(userService.getOneUserEntity(rental.getUser()));
@@ -54,6 +64,9 @@ public class RentalService {
     }
     public GetRentalDto bookReturn(BookReturnDto dto){
         var rental = rentalRepository.findById(dto.getLoanId()).orElseThrow(() -> RentalNotFoundException.create(dto.getLoanId()));
+        if (rental.getRentalDate().after(dto.getReturnDate())){
+            throw WrongDateException.create(dto.getReturnDate());
+        }
         rental.setReturnDate(dto.getReturnDate());
         rentalRepository.save(rental);
         return new GetRentalDto(rental.getLoanId(), bookService.getOne(rental.getBook().getId()), userService.getOne(rental.getUser().getUserId()), rental.getRentalDate(), rental.getEndRentalDate(), rental.getReturnDate());
