@@ -1,6 +1,7 @@
 package edu.ib.technologiebyadamski.controller.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GetBookDto {
     private long id;
@@ -14,7 +15,7 @@ public class GetBookDto {
     private String publisher;
 
     private int publicationYear;
-
+    @JsonProperty("isAvailable")
     private boolean isAvailable;
 
     public GetBookDto(long id, String isbn, String title, String author, String publisher, int publicationYear, boolean isAvailable) {
@@ -77,7 +78,7 @@ public class GetBookDto {
     public void setPublicationYear(int publicationYear) {
         this.publicationYear = publicationYear;
     }
-
+    @JsonProperty("isAvailable")
     public boolean isAvailable() {
         return isAvailable;
     }
