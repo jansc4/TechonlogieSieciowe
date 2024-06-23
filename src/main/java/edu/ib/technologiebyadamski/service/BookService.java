@@ -6,12 +6,15 @@ import edu.ib.technologiebyadamski.controller.dto.GetBookDto;
 import edu.ib.technologiebyadamski.infrastructure.entity.AuthEntity;
 import edu.ib.technologiebyadamski.infrastructure.entity.BookEntity;
 import edu.ib.technologiebyadamski.infrastructure.repository.BookRepository;
+import edu.ib.technologiebyadamski.service.error.BookDataIntegrityViolationException;
 import edu.ib.technologiebyadamski.service.error.BookNotFoundException;
 import edu.ib.technologiebyadamski.service.error.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,10 +59,22 @@ public class BookService {
         return new CreateBookResponseDto(newBook.getId(), newBook.getIsbn(), newBook.getTitle(), newBook.getAuthor(), newBook.getPublisher(), newBook.getPublicationYear(), newBook.getAvailableCopies());
     }
 
-    public void delete(long id){
-        if(!bookRepository.existsById(id)){
-            throw BookNotFoundException.create(id);
+    public void delete(long id) {
+        try {
+            if (!bookRepository.existsById(id)) {
+                throw BookNotFoundException.create(id);
+            }
+            bookRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            // Przechwyć wyjątek DataIntegrityViolationException
+            Throwable cause = e.getRootCause();
+            if (cause instanceof SQLIntegrityConstraintViolationException) {
+                // Przechwycenie SQLIntegrityConstraintViolationException
+                throw BookDataIntegrityViolationException.create(id);
+            } else {
+                // Inny rodzaj błędu związany z naruszeniem integralności danych
+                throw e;
+            }
         }
-        bookRepository.deleteById(id);
     }
 }

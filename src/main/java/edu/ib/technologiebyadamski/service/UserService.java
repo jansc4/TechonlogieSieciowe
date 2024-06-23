@@ -4,10 +4,13 @@ import edu.ib.technologiebyadamski.controller.dto.GetUserDto;
 import edu.ib.technologiebyadamski.infrastructure.entity.UserEntity;
 import edu.ib.technologiebyadamski.infrastructure.repository.AuthRepository;
 import edu.ib.technologiebyadamski.infrastructure.repository.UserRepository;
+import edu.ib.technologiebyadamski.service.error.UserDataIntegrityViolationException;
 import edu.ib.technologiebyadamski.service.error.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,10 +35,22 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() ->UserNotFoundException.create(id));
     }
 
-    public void delete(long id){
-        if(!userRepository.existsById(id)){
-            throw UserNotFoundException.create(id);
+    public void delete(long id) {
+        try {
+            if (!userRepository.existsById(id)) {
+                throw UserNotFoundException.create(id);
+            }
+            userRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            // Przechwyć wyjątek DataIntegrityViolationException
+            Throwable cause = e.getRootCause();
+            if (cause instanceof SQLIntegrityConstraintViolationException) {
+                // Przechwycenie SQLIntegrityConstraintViolationException
+                throw UserDataIntegrityViolationException.create(id);
+            } else {
+                // Inny rodzaj błędu związany z naruszeniem integralności danych
+                throw e;
+            }
         }
-        userRepository.deleteById(id);
     }
 }
